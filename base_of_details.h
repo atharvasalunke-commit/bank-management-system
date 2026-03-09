@@ -6,15 +6,14 @@ class details{
     private:
     std::string email_id;
     std::string name;
-    int password;
+    std::string password;
     public:
     void insitialize_emaild_id(std::string);
     void insitialize_name(std::string);
-    void insitialize_password(int);
+    void insitialize_password(std::string);
     std::string get_email_id();
     std::string get_name();
-    int  get_password();
-    std::string get_string_pd();
+    std::string get_password();
 };
 #endif
 extern details detail;
