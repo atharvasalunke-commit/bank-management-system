@@ -18,9 +18,7 @@ class customer_info:protected details{
     void create_account_id();
     
     void insitliaze_amount(int);
-
-    void insitiliaze_balance();
-
+    
     void insitiliaze_pincode();
 
     void transcation_history();
@@ -30,23 +28,12 @@ class customer_info:protected details{
     void check_account_id();
 
     void check_pincode();
-
-    void transfer();
-    
-    void store();
-
-    void instialize_pincode();
-
-    void insitialize_account_id();
-
-    void deposit();
     
     void change_balance();
 
     void check_balance();
     
-    void withdraw();
-
+    void transcation(std::string);
 };
 #endif
 extern std::vector<std::string>store_info_customer;

@@ -2,6 +2,7 @@
 #define base_of_details_H
 #include<iostream>
 #include<string>
+#include<ctime>
 class details{
     private:
     std::string email_id;
@@ -14,6 +15,7 @@ class details{
     std::string get_email_id();
     std::string get_name();
     std::string get_password();
+    std::string time_now();
 };
 #endif
 extern details detail;

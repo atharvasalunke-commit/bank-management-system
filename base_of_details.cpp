@@ -21,5 +21,13 @@ std::string details::get_name(){
 std::string details::get_password(){
     return password;
 }
+std::string details::time_now(){
+   
+    time_t now = time(0);      // current time
+    char* dt = ctime(&now);    // convert to readable format
+    std::string s= "Current date and time:";
+    s=s+dt;
+    return s;
+}
 
 details detail;
