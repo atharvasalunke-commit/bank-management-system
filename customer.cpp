@@ -1,5 +1,7 @@
 #include "customer.h"
-#include <fstream>
+#include <fstream> 
+#include"Database.h"
+
 void customer_info::transcation(std::string mode_of_payment){
     std::string ss=customer.account_id;
     ss=ss+".txt";
@@ -69,21 +71,6 @@ void customer_info::change_balance(){
     y=y/10;
     customer.balance=y;
 }
-void customer_info::create_account_id(){
-    std::ifstream file1 ("account_id.txt");
-    std::string x;
-    std::string line;
-    while(getline(file1,x)){
-        if(!x.empty()){line=x;}
-    }
-    file1.close();
-    std::ofstream file2("account_id.txt",std::ios::app);
-    int y=stoi(line);
-    y=y+1;
-    line=std::to_string(y);
-    customer.account_id=line;
-    file2<<line<<'\n';
-}
 void customer_info::check_account_id(){
       std::string id;
     std::cout<<"Enter your account_id:";
@@ -125,42 +112,31 @@ void customer_info::insitiliaze_pincode(){
     std::cin>>pc;
     customer.pincode=pc;
 }
+std::string customer_info::get_pin(){
+    return customer.pincode;
+}
 void customer_info:: signup(){
-    std::ofstream file("Accounts.txt",std::ios::app);
-     if(!file.is_open()){
-        std::cout<<"error opening the file"<<'\n';
-        exit(0);
+    try {
+        std::cout << "enter your name:" << '\n';
+        std::string name;
+        std::cin >> name;
+        detail.insitialize_name(name);
+        insert_account();
+        insitiliaze_pincode();
+        insert_P_P();
+        std::cout << "account created successfully!" << '\n';
     }
-    customer.create_account_id();
-    customer.insitiliaze_pincode();
-    file<<detail.get_email_id()<<'\n';
-    file<<detail.get_password()<<'\n';
-    file<<customer.account_id<<'\n';
-    file<<customer.pincode<<'\n';
-    std::string s=customer.account_id;
-    s=s+".txt";
-    std::ofstream file2 (s,std::ios::app);
-    file2<<"-------------------------"<<'\n';
-    file2<<"Current balance:"<<"0"<<"----"<<detail.time_now()<<'\n';
-    file<<"0"<<'\n';
-    std::cout<<"Registered your new account:"<<'\n';
-    file.close();
-    file2.close();
+    catch (std::exception& s) {
+        std::cout << "ERROR:" << s.what() << '\n';
+    }
 }
 void customer_info::login(){
-    std::ifstream file("Accounts.txt");
-    if(!file.is_open()){
-        std::cout<<"error opening the file"<<'\n';
-        exit(0);
+    try {
+		login_from_db();
+		std::cout << "Logged in successfully!" << '\n';
     }
-    std::string x;
-    std::string y;
-    while(getline(file,x)&&getline(file,y)){
-        if(detail.get_email_id()==x&&detail.get_password()==y){
-            std::cout<<"Welcome:"<<'\n';
-            file.close();
-            break;
-        }
+	catch (std::exception& q) {
+        std::cerr << "Error: " << q.what() << '\n';
     }
 }
 bool customer_info::login_page(std::string ans){

@@ -1,24 +1,28 @@
 #include "customer.h"
+#include"Database.h"
+
 int main(){
     bool indicator;
+	 access_mysql();
     try{
     std::string ans;
     std::cout<<"DO u wanna login or register new account, select 'LOG_IN'or'REGISTERATION':";
     std::cin>>ans;
+    std::cout << "enter your email id:";
     std::string email;
-    std::cout<<"enter your email id:";
     std::cin>>email;
     detail.insitialize_emaild_id(email);
+    std::cout << "enter your password:";
      std::string pd;
-    std::cout<<"enter your password:";
     std::cin>>pd;
     detail.insitialize_password(pd);
     indicator=customer.login_page(ans);
     }
-    catch(...){
+    catch(std::exception&e){
+        std::cout << e.what() << '\n';
         std::cout<<"error related to login_page!"<<'\n';
     }
-    if(!indicator){
+    if (!indicator) {
         return 0;
     }
     try{

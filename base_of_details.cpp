@@ -1,6 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "base_of_details.h"
-
-
 void details::insitialize_emaild_id(std::string x){
     email_id=x;
 }

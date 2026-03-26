@@ -15,8 +15,6 @@ class customer_info:protected details{
     
     void signup();
 
-    void create_account_id();
-    
     void insitliaze_amount(int);
     
     void insitiliaze_pincode();
@@ -30,6 +28,8 @@ class customer_info:protected details{
     void check_pincode();
     
     void change_balance();
+    
+    std::string get_pin();
 
     void check_balance();
     
