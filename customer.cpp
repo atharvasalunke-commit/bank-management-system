@@ -3,113 +3,53 @@
 #include"Database.h"
 
 void customer_info::transcation(std::string mode_of_payment){
-    std::string ss=customer.account_id;
-    ss=ss+".txt";
-    std::ofstream file(ss,std::ios::app);
-    if(mode_of_payment=="DEPOSIT"){
-    file<<"-------------------------"<<'\n';
-    file<<mode_of_payment<<":"<<customer.amount<<'\n';
-    customer.balance=balance+customer.amount;
-    file<<"Current balance:"<<customer.balance<<"----"<<detail.time_now()<<'\n'; 
+    customer.balance = main_session.Transcation(main_session.get_sess());
+    if (mode_of_payment == "DEPOSIT") {
+        int new_balance = customer.balance + customer.amount;
+        main_session.change_balance(main_session.get_sess(), new_balance,customer.amount,mode_of_payment);
     }
-    else if(mode_of_payment=="WITHDRAW"){
-    long long x=customer.balance;
-    x=x-customer.amount;
-    if(x<0){
-        std::cout<<"NOT ENOUGH BALANCE TO WITHDRAW!"<<'\n';
-        return;
+    else if (mode_of_payment == "WITHDRAW") {
+        if (customer.balance < customer.amount) {
+            std::cout << "Insufficient balance" << '\n';
+            return;
+            }
+        int new_balance = customer.balance - amount;
+		main_session.change_balance(main_session.get_sess(), new_balance,customer.amount, mode_of_payment);
     }
-    customer.balance=x;
-    file<<"-------------------------"<<'\n';
-    file<<mode_of_payment<<":"<<customer.amount<<'\n';
-    file<<"Current balance:"<<customer.balance<<"----"<<detail.time_now()<<'\n'; 
+    else if (mode_of_payment == "CHEK_BALANCE") {
+        std::cout << "CURRENT BALANCE:" << customer.balance << '\n';
     }
-    
-    else {
-        std::cout<<"error related to transcation function"<<'\n';
-    }
-     file.close();
-}
-void customer_info::transcation_history(){
-    std::string t=customer.account_id;
-    t=t+".txt";
-    std::ifstream file(t);
-    while(getline(file,t)){
-        std::cout<<t<<'\n';
+    else if (mode_of_payment == "TRANSCATION_HISTORY") {
+        main_session.Transcation_history(main_session.get_sess());
     }
 }
-void customer_info::change_balance(){
-    std::string p=customer.account_id;
-    p=p+".txt";
-    std::string s;
-    std::string k;
-    std::ifstream file(p);
-    while(getline(file,k)){
-        if(k.empty()){
-            continue;
-        }
-        else{
-            s=k;
-        }
-    }
-    bool indicator=false;
-    int y=0;
-    for(int i=0;i<s.size();i++){
-        if(s[i]==':'){
-            indicator=true;
-            i=i+1;
-        }
-        if(indicator&&isdigit(s[i])){
-            int x=s[i]-'0';
-            y+=x;
-            y=y*10;
-        }
-        else if(indicator){
-            break;
-        }
-    }
-    y=y/10;
-    customer.balance=y;
+
+std::string customer_info::get_account_id(){
+    return customer.account_id;
 }
 void customer_info::check_account_id(){
       std::string id;
     std::cout<<"Enter your account_id:";
     std::cin>>id;
     customer.account_id=id;
-    std::ifstream file ("accounts.txt");
-    std::string x;
-    while(getline(file,x)){
-        if(x==customer.account_id){
-            return;
-        }
-    }
-    std::cout<<"Wrong account_id"<<'\n';
-    exit(0);
+	main_session.access_account_id(main_session.get_sess());
 }
 void customer_info::insitliaze_amount(int money){
     customer.amount=money;
 }
-
 
 void customer_info::check_pincode(){
     std::string pc;
     std::cout<<"Enter your Pincode:";
     std::cin>>pc;
     customer.pincode=pc;
-    std::ifstream file ("accounts.txt");
-    std::string x;
-    while(getline(file,x)){
-        if(x==customer.pincode){
-            return;
-        }
-    }
-    std::cout<<"Wrong pincode"<<'\n';
-    exit(0);
+	main_session.access_pincode(main_session.get_sess());
+   
 }
 void customer_info::insitiliaze_pincode(){
     std::string pc;
     std::cout<<"enter you're new PINCODE for new account:";
-    std::cin>>pc;
+    std::getline(std::cin, pc);
     customer.pincode=pc;
 }
 std::string customer_info::get_pin(){
@@ -117,13 +57,17 @@ std::string customer_info::get_pin(){
 }
 void customer_info:: signup(){
     try {
-        std::cout << "enter your name:" << '\n';
+        if (std::cin.peek() == '\n') {
+                std::cin.ignore();
+            }
+        std::cout << "enter your name:";
         std::string name;
-        std::cin >> name;
+        std::getline(std::cin, name);
         detail.insitialize_name(name);
-        insert_account();
-        insitiliaze_pincode();
-        insert_P_P();
+        main_session.insert_account(main_session.get_sess());
+        customer.insitiliaze_pincode();
+        main_session.insert_P_P(main_session.get_sess());
+        main_session.balance(main_session.get_sess());
         std::cout << "account created successfully!" << '\n';
     }
     catch (std::exception& s) {
@@ -132,7 +76,7 @@ void customer_info:: signup(){
 }
 void customer_info::login(){
     try {
-		login_from_db();
+		main_session.login_from_db(main_session.get_sess());
 		std::cout << "Logged in successfully!" << '\n';
     }
 	catch (std::exception& q) {
@@ -160,20 +104,17 @@ void customer_info::handle_interface(std::string option){
     if(option=="DEPOSIT"){
         check_account_id();
         check_pincode();
-        change_balance();
         transcation(option);
     }
     else if(option=="WITHDRAW"){
         check_account_id();
         check_pincode();
-        change_balance();
         transcation(option);
     }
     else if(option=="CHECK_BALANCE"){
         check_account_id();
         check_pincode();
-        change_balance();
-        check_balance();
+		transcation(option);
     }
     else if(option=="TRANSFER"){
         std::cout<<"work in progress"<<'\n';
@@ -181,12 +122,11 @@ void customer_info::handle_interface(std::string option){
     else if(option=="TRANSCATION_HISTORY") {
         check_account_id();
         check_pincode();
-        transcation_history();
+        transcation(option);
     }
     else{
         std::cout<<"error interface wouldn't work"<<'\n';
     }
 }
 
-std::vector<std::string>store_info_customer;
 customer_info customer;

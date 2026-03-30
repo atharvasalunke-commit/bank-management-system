@@ -1,9 +1,9 @@
 #include "customer.h"
 #include"Database.h"
-
+#include<mysqlx/xdevapi.h>
 int main(){
     bool indicator;
-	 access_mysql();
+	 main_session.access_mysql(main_session.get_sess());
     try{
     std::string ans;
     std::cout<<"DO u wanna login or register new account, select 'LOG_IN'or'REGISTERATION':";

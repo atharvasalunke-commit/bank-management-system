@@ -25,6 +25,8 @@ class customer_info:protected details{
     
     void check_account_id();
 
+    std::string get_account_id();
+
     void check_pincode();
     
     void change_balance();
@@ -36,5 +38,4 @@ class customer_info:protected details{
     void transcation(std::string);
 };
 #endif
-extern std::vector<std::string>store_info_customer;
 extern customer_info customer;
