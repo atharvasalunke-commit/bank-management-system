@@ -80,24 +80,15 @@ void Bank_Database::balance(mysqlx::Session&sess) {
 		.values(result[0], "created_account", 0)
 		.execute();
 }
-void Bank_Database::change_balance(mysqlx::Session& sess,int&new_balance,int&amount,std::string &x) {
+void Bank_Database::change_balance(mysqlx::Session& sess,int&new_balance,int&amount,std::string &x,int &id) {
 	mysqlx::Schema db = sess.getSchema("Bankkk");
 	if (!db.existsInDatabase()) {
 		std::cout << " database doesn't exist" << '\n';
 		return;
 	}
-	auto table_1 = db.getTable("accounts");
-	auto row = table_1.select("id")
-		.where("email_id= '" + detail.get_email_id() + "'")
-		.execute();
-	if (row.count() == 0) {
-		std::cout << "could not find account" << '\n';
-		return;
-	}
-	auto result = row.fetchOne();
 	mysqlx::Table table_2 = db.getTable("transcation_history");
 	table_2.insert("id", "mode","amount", "curr_balance")
-		.values(result[0].get<int>(), x,amount, new_balance)
+		.values(id, x, amount, new_balance)
 		.execute();
 	std::cout<< "Transcation Done" << '\n';
 }
@@ -183,5 +174,18 @@ void Bank_Database::Transcation_history(mysqlx::Session& sess) {
 		std::cout << "Error related to Transcation history" << '\n';
 		exit(0);
 	}
+}
+void Bank_Database::sender(mysqlx::Session& sess,std::string&id_receiver,int &amount) {
+	mysqlx::Schema db = sess.getSchema("Bankkk");
+	mysqlx::Table table =db.getTable("transcation_history");
+	auto result = table.select("curr_balance")
+		.where("id='" + id_receiver + "'")
+		.orderBy("curr_dt DESC")
+		.execute();
+	auto row = result.fetchOne();
+	int x = amount + row[0].get<int>();
+	table.insert("id", "mode", "amount", "curr_balance")
+		.values(id_receiver, "received amount from '" + customer.get_account_id() + "'", amount, x)
+		.execute();
 }
 Bank_Database main_session;

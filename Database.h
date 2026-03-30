@@ -30,10 +30,11 @@ public:
 
 	int Transcation(mysqlx::Session&);
 
-	void change_balance(mysqlx::Session&,int&,int&,std::string&);
+	void change_balance(mysqlx::Session&,int&,int&,std::string&,int&);
 
 	void Transcation_history(mysqlx::Session&);
 
+	void sender(mysqlx::Session&,std::string&,int&);
 };
 #endif
 extern Bank_Database main_session;

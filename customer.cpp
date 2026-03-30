@@ -4,9 +4,10 @@
 
 void customer_info::transcation(std::string mode_of_payment){
     customer.balance = main_session.Transcation(main_session.get_sess());
+    int id = stoi(customer.get_account_id());
     if (mode_of_payment == "DEPOSIT") {
         int new_balance = customer.balance + customer.amount;
-        main_session.change_balance(main_session.get_sess(), new_balance,customer.amount,mode_of_payment);
+        main_session.change_balance(main_session.get_sess(), new_balance,customer.amount,mode_of_payment,id);
     }
     else if (mode_of_payment == "WITHDRAW") {
         if (customer.balance < customer.amount) {
@@ -14,13 +15,22 @@ void customer_info::transcation(std::string mode_of_payment){
             return;
             }
         int new_balance = customer.balance - amount;
-		main_session.change_balance(main_session.get_sess(), new_balance,customer.amount, mode_of_payment);
+		main_session.change_balance(main_session.get_sess(), new_balance,customer.amount, mode_of_payment,id);
     }
     else if (mode_of_payment == "CHEK_BALANCE") {
         std::cout << "CURRENT BALANCE:" << customer.balance << '\n';
     }
     else if (mode_of_payment == "TRANSCATION_HISTORY") {
         main_session.Transcation_history(main_session.get_sess());
+    }
+    else if (mode_of_payment == "TRANSFER") {
+        if (customer.balance < customer.amount) {
+            std::cout << "NOT enough balance" << '\n';
+            exit(0);
+        }
+        mode_of_payment = "TRANSFERED to other account";
+        customer.balance -= customer.amount;
+        main_session.change_balance(main_session.get_sess(), customer.balance, customer.amount, mode_of_payment,id);
     }
 }
 
@@ -97,8 +107,17 @@ bool customer_info::login_page(std::string ans){
     }
     return false;
 }
-void customer_info::check_balance(){
-  std::cout<<"Current Balance:"<<customer.balance<<'\n';
+void customer_info::transfer(std::string option) {
+    std::cout << "HOW much amount do u wanna transfer:";
+    int amount;
+    std::cin >> amount;
+    customer.insitliaze_amount(amount);
+	std::cout << "enter account id of receiver:";
+    std::string x;
+    std::cout << "enter receiver's account id:";
+    std::cin >> x;
+    customer.transcation(option);
+    main_session.sender(main_session.get_sess(),x,amount);
 }
 void customer_info::handle_interface(std::string option){
     if(option=="DEPOSIT"){
@@ -117,7 +136,10 @@ void customer_info::handle_interface(std::string option){
 		transcation(option);
     }
     else if(option=="TRANSFER"){
-        std::cout<<"work in progress"<<'\n';
+        check_account_id();
+        check_pincode();
+		transfer(option);
+        std::cout << "Amount is transfered" << '\n';
     }
     else if(option=="TRANSCATION_HISTORY") {
         check_account_id();

@@ -19,8 +19,6 @@ class customer_info:protected details{
     
     void insitiliaze_pincode();
 
-    void transcation_history();
-
     void handle_interface(std::string);
     
     void check_account_id();
@@ -28,14 +26,12 @@ class customer_info:protected details{
     std::string get_account_id();
 
     void check_pincode();
-    
-    void change_balance();
-    
+        
     std::string get_pin();
-
-    void check_balance();
     
     void transcation(std::string);
+
+	void transfer(std::string);
 };
 #endif
 extern customer_info customer;
