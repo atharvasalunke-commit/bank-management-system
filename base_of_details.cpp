@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "base_of_details.h"
-void details::insitialize_emaild_id(std::string x){
+void details::insitialize_email_id(std::string x){
     email_id=x;
 }
 
@@ -9,7 +9,7 @@ void details::insitialize_name(std::string y){
 }
 
 void details::insitialize_password(std::string k){
-    password=k;
+    detail.password=k;
 }
 std::string details::get_email_id(){
     return email_id;
@@ -19,14 +19,6 @@ std::string details::get_name(){
 }
 std::string details::get_password(){
     return password;
-}
-std::string details::time_now(){
-   
-    time_t now = time(0);      // current time
-    char* dt = ctime(&now);    // convert to readable format
-    std::string s= "Current date and time:";
-    s=s+dt;
-    return s;
 }
 
 details detail;

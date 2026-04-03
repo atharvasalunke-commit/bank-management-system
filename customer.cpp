@@ -1,10 +1,8 @@
 #include "customer.h"
-#include <fstream> 
 #include"Database.h"
-
 void customer_info::transcation(std::string mode_of_payment){
     customer.balance = main_session.Transcation(main_session.get_sess());
-    int id = stoi(customer.get_account_id());
+    int id = std::stoi(customer.get_account_id());
     if (mode_of_payment == "DEPOSIT") {
         int new_balance = customer.balance + customer.amount;
         main_session.change_balance(main_session.get_sess(), new_balance,customer.amount,mode_of_payment,id);
@@ -17,7 +15,7 @@ void customer_info::transcation(std::string mode_of_payment){
         int new_balance = customer.balance - amount;
 		main_session.change_balance(main_session.get_sess(), new_balance,customer.amount, mode_of_payment,id);
     }
-    else if (mode_of_payment == "CHEK_BALANCE") {
+    else if (mode_of_payment == "CHECK_BALANCE") {
         std::cout << "CURRENT BALANCE:" << customer.balance << '\n';
     }
     else if (mode_of_payment == "TRANSCATION_HISTORY") {
@@ -33,37 +31,37 @@ void customer_info::transcation(std::string mode_of_payment){
         main_session.change_balance(main_session.get_sess(), customer.balance, customer.amount, mode_of_payment,id);
     }
 }
+void customer_info::insitliaze_amount(int money) {
+    customer.amount = money;
+}
+void customer_info::instialize_account_id(std::string& id) {
+    customer.account_id = id;
+}
+
+void customer_info::insitiliaze_pincode() {
+    std::string pc;
+    std::cout << "enter you're new PINCODE for new account:";
+    std::getline(std::cin, pc);
+    customer.pincode = pc;
+}
 
 std::string customer_info::get_account_id(){
     return customer.account_id;
 }
-void customer_info::check_account_id(){
-      std::string id;
-    std::cout<<"Enter your account_id:";
-    std::cin>>id;
-    customer.account_id=id;
-	main_session.access_account_id(main_session.get_sess());
-}
-void customer_info::insitliaze_amount(int money){
-    customer.amount=money;
+std::string customer_info::get_pin() {
+    return customer.pincode;
 }
 
-void customer_info::check_pincode(){
+void customer_info::check_account(){
+    std::string id;
+    std::cout<<"Enter your account_id:";
+    std::cin>>id;
     std::string pc;
-    std::cout<<"Enter your Pincode:";
-    std::cin>>pc;
-    customer.pincode=pc;
-	main_session.access_pincode(main_session.get_sess());
-   
-}
-void customer_info::insitiliaze_pincode(){
-    std::string pc;
-    std::cout<<"enter you're new PINCODE for new account:";
-    std::getline(std::cin, pc);
-    customer.pincode=pc;
-}
-std::string customer_info::get_pin(){
-    return customer.pincode;
+    std::cout << "Enter your Pincode:";
+    std::cin >> pc;
+    customer.pincode = pc;
+    customer.account_id=id;
+	main_session.access_account_details(main_session.get_sess());
 }
 void customer_info:: signup(){
     try {
@@ -77,7 +75,7 @@ void customer_info:: signup(){
         main_session.insert_account(main_session.get_sess());
         customer.insitiliaze_pincode();
         main_session.insert_P_P(main_session.get_sess());
-        main_session.balance(main_session.get_sess());
+        main_session.initial_balance(main_session.get_sess());
         std::cout << "account created successfully!" << '\n';
     }
     catch (std::exception& s) {
@@ -121,29 +119,24 @@ void customer_info::transfer(std::string option) {
 }
 void customer_info::handle_interface(std::string option){
     if(option=="DEPOSIT"){
-        check_account_id();
-        check_pincode();
+        check_account();
         transcation(option);
     }
     else if(option=="WITHDRAW"){
-        check_account_id();
-        check_pincode();
+        check_account();
         transcation(option);
     }
     else if(option=="CHECK_BALANCE"){
-        check_account_id();
-        check_pincode();
+        check_account();
 		transcation(option);
     }
     else if(option=="TRANSFER"){
-        check_account_id();
-        check_pincode();
+        check_account();
 		transfer(option);
         std::cout << "Amount is transfered" << '\n';
     }
     else if(option=="TRANSCATION_HISTORY") {
-        check_account_id();
-        check_pincode();
+        check_account();
         transcation(option);
     }
     else{

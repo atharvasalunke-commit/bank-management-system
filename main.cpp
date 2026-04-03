@@ -1,6 +1,5 @@
-#include "customer.h"
 #include"Database.h"
-#include<mysqlx/xdevapi.h>
+#include"customer.h"
 int main(){
     bool indicator;
 	 main_session.access_mysql(main_session.get_sess());
@@ -8,10 +7,14 @@ int main(){
     std::string ans;
     std::cout<<"DO u wanna login or register new account, select 'LOG_IN'or'REGISTERATION':";
     std::cin>>ans;
+    if (ans != "LOG_IN" && ans != "REGISTERATION") {
+        std::cout << "ERROR! TRY AGAIN" << '\n';
+        return  1;
+    }
     std::cout << "enter your email id:";
     std::string email;
     std::cin>>email;
-    detail.insitialize_emaild_id(email);
+    detail.insitialize_email_id(email);
     std::cout << "enter your password:";
      std::string pd;
     std::cin>>pd;
@@ -21,6 +24,7 @@ int main(){
     catch(std::exception&e){
         std::cout << e.what() << '\n';
         std::cout<<"error related to login_page!"<<'\n';
+        return 1;
     }
     if (!indicator) {
         return 0;

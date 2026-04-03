@@ -1,9 +1,5 @@
-#include <mysqlx/xdevapi.h>
 #include "Database.h"
-#include<string>
-#include"base_of_details.h"
 #include"customer.h"
-#include<vector>
 
 void Bank_Database:: access_mysql(mysqlx::Session &ses) {
 	std::cout << "Successfully connected to database" << '\n';
@@ -23,23 +19,36 @@ void Bank_Database:: access_mysql(mysqlx::Session &ses) {
 }
 void Bank_Database::insert_account(mysqlx::Session&sess) {
 	auto db = sess.getSchema("Bankkk");
+
 	if (!db.existsInDatabase()) {
 		std::cout << " database doesn't exist" << '\n';
 		return;
+	}
+	auto table = db.getTable("accounts");
+	auto result=table.select("email_id")
+		.where("email_id='" + detail.get_email_id() + "'")
+		.execute();
+	if (result.count() > 0) {
+		auto row = result.fetchOne();
+
+		if ( row[0].get<std::string>() == detail.get_email_id()) {
+			std::cout << "This email_id already exists" << '\n';
+			return;
+		}
 	}
 	auto table_1 = db.getTable("accounts");
 	table_1.insert("name", "email_id")
 		.values(detail.get_name(), detail.get_email_id())
 		.execute();
 }
-void Bank_Database::insert_P_P(mysqlx::Session&sess) {
+void  Bank_Database::insert_P_P(mysqlx::Session&sess) {
 	auto db = sess.getSchema("Bankkk");
 	if (!db.existsInDatabase()) {
 		std::cout << " database doesn't exist" << '\n';
 		return;
 	}
 	auto row = db.getTable("accounts")
-		.select("id", "email_id").
+		.select("id").
 		where("email_id ='"+detail.get_email_id()+"'")
 		.execute();
 		auto result = row.fetchOne();
@@ -47,7 +56,9 @@ void Bank_Database::insert_P_P(mysqlx::Session&sess) {
 	auto table_2 = db.getTable("P_P");
 	table_2.insert("id","password", "pin")
 		.values(result[0],detail.get_password(), customer.get_pin())
-		.execute();
+		.execute();	
+	std::string id = std::to_string(result[0].get<int>());
+	customer.instialize_account_id(id);
 }
 void Bank_Database::login_from_db(mysqlx::Session& sess) {
 	auto db = sess.getSchema("Bankkk");
@@ -64,20 +75,15 @@ void Bank_Database::login_from_db(mysqlx::Session& sess) {
 		.where("password='" + detail.get_password() + "'")
 		.execute();
 }
-void Bank_Database::balance(mysqlx::Session&sess) {
+void Bank_Database::initial_balance(mysqlx::Session&sess) {
 	mysqlx::Schema db = sess.getSchema("Bankkk");
 	if (!db.existsInDatabase()) {
 		std::cout << " database doesn't exist" << '\n';
 		return;
 	}
-	auto table_1 = db.getTable("accounts");
-	auto row = table_1.select("id")
-		.where("email_id= '" + detail.get_email_id() + "'")
-		.execute();
-	auto result = row.fetchOne();
 	mysqlx::Table table_2 = db.getTable("transcation_history");
 	table_2.insert("id", "mode", "curr_balance")
-		.values(result[0], "created_account", 0)
+		.values(stoi(customer.get_account_id()), "created_account", 0)
 		.execute();
 }
 void Bank_Database::change_balance(mysqlx::Session& sess,int&new_balance,int&amount,std::string &x,int &id) {
@@ -93,24 +99,7 @@ void Bank_Database::change_balance(mysqlx::Session& sess,int&new_balance,int&amo
 	std::cout<< "Transcation Done" << '\n';
 }
 
-void Bank_Database::access_account_id(mysqlx::Session&sess) {
-	try {
-		auto db = sess.getSchema("Bankkk");
-		if (!db.existsInDatabase()) {
-			std::cout << " database doesn't exist" << '\n';
-			return;
-		}
-		auto table = db.getTable("accounts");
-		auto result = table.select("id")
-			.where("id='" + customer.get_account_id() + "'")
-			.execute();
-	}
-	catch (...) {
-		std::cout << "error wrong account_Id" << '\n';
-		exit(0);
-	}
-	}
-void Bank_Database::access_pincode(mysqlx::Session&sess){
+void Bank_Database::access_account_details(mysqlx::Session&sess) {
 	try {
 		auto db = sess.getSchema("Bankkk");
 		if (!db.existsInDatabase()) {
@@ -118,13 +107,23 @@ void Bank_Database::access_pincode(mysqlx::Session&sess){
 			return;
 		}
 		auto table = db.getTable("P_P");
-		auto row = table.select("pin")
-			.where("pin='" + customer.get_pin() + "'")
+		auto result = table.select("pin")
+			.where("id='" + customer.get_account_id() + "'")
 			.execute();
-		return;
+		if (result.count() > 0) {
+			auto row = result.fetchOne();
+			std::string p = std::to_string(row[0].get<int>());
+			if (p == customer.get_pin()) {
+				std::cout << "Log in successfully" << '\n';
+			}
+			else {
+				std::cout << "error wrong email_id or pincode" << '\n';
+				exit(0);
+			}
+		}
 	}
 	catch (...) {
-		std::cout << "error wrong pincode" << '\n';
+		std::cout << "error wrong email_id or pincode" << '\n';
 		exit(0);
 	}
 }
