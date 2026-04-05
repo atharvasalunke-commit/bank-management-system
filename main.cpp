@@ -1,8 +1,9 @@
 #include"Database.h"
 #include"customer.h"
+#include "bcrypt.h"
 int main(){
     bool indicator;
-	 main_session.access_mysql(main_session.get_sess());
+	 main_session.access_mysql();
     try{
     std::string ans;
     std::cout<<"DO u wanna login or register new account, select 'LOG_IN'or'REGISTERATION':";
@@ -37,6 +38,10 @@ int main(){
         int money;
         std::cout<<"Enter amount to"<<option<<":";
         std::cin>>money;
+        if (money <= 0) {
+            std::cout << "Invalid amount" << '\n';
+            exit(0);
+        }
         customer.insitliaze_amount(money);
         }
         customer.handle_interface(option);

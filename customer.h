@@ -30,8 +30,6 @@ class customer_info:protected details{
     void transcation(std::string);
 
     void instialize_account_id(std::string&);
-
-	void transfer(std::string);
 };
 extern customer_info customer;
 #endif

@@ -9,7 +9,7 @@ void details::insitialize_name(std::string y){
 }
 
 void details::insitialize_password(std::string k){
-    detail.password=k;
+    password=k;
 }
 std::string details::get_email_id(){
     return email_id;

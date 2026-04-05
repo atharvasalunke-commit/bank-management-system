@@ -12,25 +12,25 @@ public:
 	mysqlx::Session&get_sess() {
 		return sess;
 	}
-	void access_mysql(mysqlx::Session&);
+	void access_mysql();
 
-	void insert_account(mysqlx::Session&);
+	void insert_account();
 
-	void login_from_db (mysqlx::Session&);
+	void login_from_db ();
 
-	void insert_P_P(mysqlx::Session&);
+	void insert_P_P();
 
-	void access_account_details(mysqlx::Session&);
+	void access_account_details();
 
-	void initial_balance(mysqlx::Session&);
+	void initial_balance();
 
-	int Transcation(mysqlx::Session&);
+	int Transcation();
 
-	void change_balance(mysqlx::Session&,int&,int&,std::string&,int&);
+	void change_balance(int&,int&,std::string&,int&);
 
-	void Transcation_history(mysqlx::Session&);
+	void Transcation_history();
 
-	void sender(mysqlx::Session&,std::string&,int&);
+	void sender(std::string&,int&);
 };
 extern Bank_Database main_session;
 #endif
